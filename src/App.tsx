@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { 
   ShieldAlert, 
   Calculator, 
@@ -313,20 +313,20 @@ export default function App() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
-                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
+                    className="grid grid-cols-2 gap-3 md:gap-4 lg:max-w-4xl mx-auto"
                   >
-                    <div className="col-span-full mb-6 flex items-end justify-between border-b border-white/5 pb-4">
+                    <div className="col-span-full mb-4 flex items-end justify-between border-b border-white/5 pb-4">
                       <div>
-                        <h2 className="text-3xl font-black text-white flex items-center gap-3">
-                          <LayoutDashboard className="w-8 h-8 text-amber-500" />
+                        <h2 className="text-2xl font-black text-white flex items-center gap-3">
+                          <LayoutDashboard className="w-7 h-7 text-amber-500" />
                           মডিউল সমূহ
                         </h2>
-                        <p className="text-slate-500 font-medium mt-1">আপনার দক্ষতা পরীক্ষার জন্য একটি বিভাগ বেছে নিন</p>
+                        <p className="text-xs text-slate-500 font-medium mt-1">আপনার দক্ষতা পরীক্ষার জন্য একটি বিভাগ বেছে নিন</p>
                       </div>
-                      <div className="hidden md:block text-right">
-                        <span className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.2em]">Total Score</span>
-                        <p className="text-xl font-black text-amber-500">
-                          {Math.round(Object.values(progress).reduce((a, b) => a + b, 0) / (modules.length || 1))}%
+                      <div className="hidden sm:block text-right">
+                        <span className="text-[9px] font-bold text-slate-600 uppercase tracking-[0.2em]">Total Score</span>
+                        <p className="text-lg font-black text-amber-500">
+                          {Math.round((Object.values(progress) as number[]).reduce((a, b) => a + b, 0) / (modules.length || 1))}%
                         </p>
                       </div>
                     </div>
@@ -341,29 +341,29 @@ export default function App() {
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: index * 0.05 }}
-                          whileHover={{ y: -5, shadow: "0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)" }}
+                          whileHover={{ y: -4, shadow: "0 15px 20px -5px rgba(0,0,0,0.1)" }}
                           onClick={() => startQuiz(module)}
-                          className="relative group flex flex-col items-start p-6 bg-white/5 border border-white/10 rounded-[2rem] hover:border-amber-500/40 hover:bg-white/[0.08] transition-all text-left overflow-hidden h-full"
+                          className="relative group flex flex-col items-start p-4 md:p-5 bg-white/5 border border-white/10 rounded-[1.5rem] hover:border-amber-500/40 hover:bg-white/[0.08] transition-all text-left overflow-hidden h-full"
                         >
-                          <div className="flex w-full items-center justify-between mb-6">
-                            <div className="bg-white/5 p-4 rounded-2xl border border-white/5 group-hover:border-amber-500/20 group-hover:text-amber-500 transition-all">
-                              <Icon className="w-8 h-8" />
+                          <div className="flex w-full items-center justify-between mb-4">
+                            <div className="bg-white/5 p-3 rounded-xl border border-white/5 group-hover:border-amber-500/20 group-hover:text-amber-500 transition-all">
+                              <Icon className="w-6 h-6" />
                             </div>
                             {progressVal > 0 && (
-                              <div className={`px-3 py-1 rounded-full text-[10px] font-black border uppercase tracking-tighter ${progressVal >= 80 ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-amber-500/10 text-amber-500 border-amber-500/20'}`}>
-                                {progressVal}% পাস
+                              <div className={`px-2 py-0.5 rounded-full text-[9px] font-black border uppercase tracking-tighter ${progressVal >= 80 ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-amber-500/10 text-amber-500 border-amber-500/20'}`}>
+                                {progressVal}%
                               </div>
                             )}
                           </div>
-                          <h3 className="text-lg font-bold text-white group-hover:text-amber-400 transition-colors mb-4 line-clamp-2 min-h-[3.5rem]">
+                          <h3 className="text-sm md:text-base font-bold text-white group-hover:text-amber-400 transition-colors mb-3 line-clamp-2 min-h-[2.5rem]">
                             {module.name}
                           </h3>
-                          <div className="mt-auto flex items-center gap-2 text-xs font-black text-amber-500 uppercase tracking-widest group-hover:translate-x-2 transition-transform">
-                            শুরু করুন <ChevronRight className="w-4 h-4" />
+                          <div className="mt-auto flex items-center gap-2 text-[10px] font-black text-amber-500 uppercase tracking-widest group-hover:translate-x-1 transition-transform">
+                            শুরু <ChevronRight className="w-3.5 h-3.5" />
                           </div>
 
-                          <div className="absolute -bottom-8 -right-8 opacity-[0.02] group-hover:opacity-[0.05] transition-opacity">
-                            <Icon className="w-32 h-32" />
+                          <div className="absolute -bottom-6 -right-6 opacity-[0.02] group-hover:opacity-[0.05] transition-opacity">
+                            <Icon className="w-24 h-24" />
                           </div>
                         </motion.button>
                       );
@@ -405,11 +405,11 @@ export default function App() {
                         {currentQuestionIndex + 1}
                       </div>
                       
-                      <h2 className="text-2xl font-bold text-white mb-10 leading-relaxed">
+                      <h2 className="text-lg md:text-xl font-bold text-white mb-8 leading-relaxed">
                         {selectedModule.questions[currentQuestionIndex].question}
                       </h2>
 
-                      <div className="grid grid-cols-1 gap-4">
+                      <div className="grid grid-cols-1 gap-3">
                         {selectedModule.questions[currentQuestionIndex].options.map((option, idx) => {
                           const isSelected = userAnswers[currentQuestionIndex] === idx;
                           const isCorrect = selectedModule.questions[currentQuestionIndex].answer === idx;
@@ -422,7 +422,7 @@ export default function App() {
                               disabled={showFeedback}
                               onClick={() => handleAnswer(idx)}
                               className={`
-                                relative group flex items-center gap-4 p-5 rounded-[1.5rem] border transition-all text-left
+                                relative group flex items-center gap-3 p-4 rounded-[1.2rem] border transition-all text-left
                                 ${!showFeedback ? 'bg-white/5 border-white/5 hover:border-amber-500/50 hover:bg-white/10 cursor-pointer' : 'cursor-default'}
                                 ${showCorrect ? 'bg-green-500/10 border-green-500/50 text-green-200 ring-2 ring-green-500/20' : ''}
                                 ${showWrong ? 'bg-red-500/10 border-red-500/50 text-red-200' : ''}
@@ -431,14 +431,14 @@ export default function App() {
                               `}
                             >
                               <div className={`
-                                w-8 h-8 rounded-xl border flex items-center justify-center text-xs font-black transition-all
+                                w-7 h-7 rounded-lg border flex items-center justify-center text-[10px] font-black transition-all
                                 ${showCorrect ? 'bg-green-500 border-green-400 text-slate-900' : ''}
                                 ${showWrong ? 'bg-red-500 border-red-400 text-slate-900' : ''}
                                 ${isSelected && !showFeedback ? 'bg-amber-500 border-amber-400 text-slate-900 shadow-lg shadow-amber-500/20' : 'bg-white/5 border-white/10 group-hover:border-amber-500/50 group-hover:text-amber-500'}
                               `}>
                                 {String.fromCharCode(65 + idx)}
                               </div>
-                              <span className="flex-grow font-bold text-slate-200">{option}</span>
+                              <span className="flex-grow font-medium text-sm text-slate-200">{option}</span>
                               {showCorrect && <CheckCircle2 className="w-5 h-5 text-green-500" />}
                               {showWrong && <XCircle className="w-5 h-5 text-red-500" />}
                             </button>
@@ -449,7 +449,7 @@ export default function App() {
                       {/* Feedback Text */}
                       {showFeedback && (
                         <motion.div 
-                          initial={{ opacity: 0, y: 10 }}
+                          initial={{ opacity: 0, y: 5 }}
                           animate={{ opacity: 1, y: 0 }}
                           className={`mt-8 p-4 rounded-2xl border flex items-center gap-3 ${userAnswers[currentQuestionIndex] === selectedModule.questions[currentQuestionIndex].answer ? 'bg-green-500/10 border-green-500/20 text-green-400' : 'bg-red-500/10 border-red-500/20 text-red-400'}`}
                         >
@@ -474,7 +474,7 @@ export default function App() {
                         onClick={prevQuestion}
                         className="flex items-center gap-2 px-8 py-3 rounded-full font-bold transition-all border bg-white/5 border-white/5 text-slate-400 hover:bg-white/10 hover:text-white"
                       >
-                        <ChevronLeft className="w-5 h-5" /> পূর্ববর্তী
+                        <ChevronLeft className="w-4 h-4" /> <span className="text-sm">পূর্ববর্তী</span>
                       </button>
 
                       <button
@@ -487,8 +487,8 @@ export default function App() {
                             : 'bg-gradient-to-r from-amber-500 to-orange-600 text-[#0c0c0e] shadow-amber-500/20 hover:scale-[1.02] active:scale-[0.98]'}
                         `}
                       >
-                        {currentQuestionIndex === selectedModule.questions.length - 1 ? 'ফলাফল দেখুন' : 'পরবর্তী প্রশ্ন'} 
-                        <ChevronRight className="w-5 h-5" />
+                        <span className="text-sm">{currentQuestionIndex === selectedModule.questions.length - 1 ? 'ফলাফল' : 'পরবর্তী'}</span> 
+                        <ChevronRight className="w-4 h-4" />
                       </button>
                     </div>
                   </motion.div>
