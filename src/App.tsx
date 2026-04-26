@@ -47,8 +47,15 @@ const iconMap: Record<string, any> = {
 type View = "welcome" | "home" | "quiz" | "result";
 
 export default function App() {
-  const [currentView, setCurrentView] = useState<View>("welcome");
-  const [userName, setUserName] = useState("");
+  const [currentView, setCurrentView] = useState<View>(() => {
+    if (typeof window !== "undefined" && localStorage.getItem("automotive-quiz-user-name")) {
+      return "home";
+    }
+    return "welcome";
+  });
+  const [userName, setUserName] = useState(() => {
+    return (typeof window !== "undefined" && localStorage.getItem("automotive-quiz-user-name")) || "";
+  });
   const [selectedModule, setSelectedModule] = useState<Module | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<(number | null)[]>([]);
@@ -56,16 +63,40 @@ export default function App() {
   const [showFeedback, setShowFeedback] = useState(false);
   const [progress, setProgress] = useState<Record<string, number>>({});
 
+  // Sync state with browser history for hardware back button support
+  useEffect(() => {
+    const handlePopState = (event: PopStateEvent) => {
+      if (event.state && event.state.view) {
+        // Simple heuristic: don't allow going back to welcome if already entered
+        if (event.state.view === "welcome" && localStorage.getItem("automotive-quiz-user-name")) {
+          setCurrentView("home");
+        } else {
+          setCurrentView(event.state.view);
+        }
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  const navigateTo = (view: View) => {
+    setCurrentView(view);
+    window.history.pushState({ view }, "", "");
+  };
+
   // Load name and progress from local storage
   useEffect(() => {
     const savedName = localStorage.getItem("automotive-quiz-user-name");
     const savedProgress = localStorage.getItem("automotive-quiz-progress");
     
     if (savedName) {
-      setUserName(savedName);
-      setCurrentView("home");
-      // Notify on entry for returning users
+      // Initial state push for returning user
+      window.history.replaceState({ view: "home" }, "", "");
       sendTelegramNotification(`${savedName} (Returning)`);
+    } else {
+      // Initial state push for new user
+      window.history.replaceState({ view: "welcome" }, "", "");
     }
     
     if (savedProgress) {
@@ -100,7 +131,7 @@ export default function App() {
       const name = userName.trim();
       localStorage.setItem("automotive-quiz-user-name", name);
       sendTelegramNotification(name);
-      setCurrentView("home");
+      navigateTo("home");
     }
   };
 
@@ -110,7 +141,7 @@ export default function App() {
     setUserAnswers(new Array(module.questions.length).fill(null));
     setScore(0);
     setShowFeedback(false);
-    setCurrentView("quiz");
+    navigateTo("quiz");
     window.scrollTo(0, 0);
   };
 
@@ -135,7 +166,7 @@ export default function App() {
       if (selectedModule) {
         saveProgress(selectedModule.id, score, selectedModule.questions.length);
       }
-      setCurrentView("result");
+      navigateTo("result");
     }
   };
 
@@ -143,11 +174,13 @@ export default function App() {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(prev => prev - 1);
       setShowFeedback(false);
+    } else {
+      navigateTo("home");
     }
   };
 
   const resetQuiz = () => {
-    setCurrentView("home");
+    navigateTo("home");
     setSelectedModule(null);
     setCurrentQuestionIndex(0);
     setScore(0);
@@ -263,7 +296,7 @@ export default function App() {
               </div>
               {currentView !== "home" && (
                 <button 
-                  onClick={() => setCurrentView("home")}
+                  onClick={() => navigateTo("home")}
                   className="p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl transition-all group"
                   title="মূল পাতা"
                 >
@@ -423,7 +456,7 @@ export default function App() {
                           {userAnswers[currentQuestionIndex] === selectedModule.questions[currentQuestionIndex].answer ? (
                             <>
                               <CheckCircle2 className="w-5 h-5" />
-                              <p className="text-sm font-bold">চমত্কার! সঠিক উত্তর।</p>
+                              <p className="text-sm font-bold">চমৎকার! সঠিক উত্তর।</p>
                             </>
                           ) : (
                             <>
@@ -439,11 +472,7 @@ export default function App() {
                     <div className="flex items-center justify-between">
                       <button
                         onClick={prevQuestion}
-                        disabled={currentQuestionIndex === 0}
-                        className={`
-                          flex items-center gap-2 px-8 py-3 rounded-full font-bold transition-all border
-                          ${currentQuestionIndex === 0 ? 'opacity-20 pointer-events-none' : 'bg-white/5 border-white/5 text-slate-400 hover:bg-white/10 hover:text-white'}
-                        `}
+                        className="flex items-center gap-2 px-8 py-3 rounded-full font-bold transition-all border bg-white/5 border-white/5 text-slate-400 hover:bg-white/10 hover:text-white"
                       >
                         <ChevronLeft className="w-5 h-5" /> পূর্ববর্তী
                       </button>
